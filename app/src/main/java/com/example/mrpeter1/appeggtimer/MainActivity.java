@@ -2,6 +2,7 @@ package com.example.mrpeter1.appeggtimer;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -15,8 +16,32 @@ public class MainActivity extends AppCompatActivity {
     Button buttonplayback;
     TextView textView ;
     SeekBar VolumeSeekBar;
+    Boolean counterIsActive = false;
+    Button goButton;
+    CountDownTimer countDownTimer;
+
+    public void resetTimer(){
+
+        textView.setText("0:30");
+        VolumeSeekBar.setProgress(30);
+        VolumeSeekBar.setEnabled(true);
+        countDownTimer.cancel();
+        buttonplayback.setText("GO!");
+        counterIsActive = false;
+    }
+
     public void timerback (View view){
-        CountDownTimer countDownTimer = new CountDownTimer(VolumeSeekBar.getProgress()*1000 + 100, 1000) {
+
+        if (counterIsActive){
+
+            resetTimer();
+        } else {
+
+            counterIsActive = true;
+            VolumeSeekBar.setEnabled(false);
+            buttonplayback.setText("STOP");
+        //}
+            countDownTimer = new CountDownTimer(VolumeSeekBar.getProgress()*1000 , 500) {
             @Override
             public void onTick(long millisUntilFinished) {
                 updateTimer((int) millisUntilFinished / 1000);
@@ -24,9 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                Log.i("tag", "timer all done");
+                MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.zaplat);
+                mediaPlayer.start();
+                resetTimer();
             }
-        }.start();
+        }.start(); }
 
     };
 
@@ -40,8 +67,9 @@ public class MainActivity extends AppCompatActivity {
         if (seconds <= 9 ){
             secondString = "0" + secondString;
         }
-        textView.setText(Integer.toString(minute)+ ":"+ secondString);
 
+        textView.setText(Integer.toString(minute)+ ":"+ secondString);
+        Log.i("tag", "timer all done" + secondleft);
     }
 
     @Override
@@ -55,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
 
      VolumeSeekBar = findViewById(R.id.VolumeSeekBar);
 
-        VolumeSeekBar.setMax(1000); // nilai maksimal
-        //VolumeSeekBar.setProgress(0);
+        VolumeSeekBar.setMax(600); // nilai maksimal
+        VolumeSeekBar.setProgress(30);
 
         VolumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
